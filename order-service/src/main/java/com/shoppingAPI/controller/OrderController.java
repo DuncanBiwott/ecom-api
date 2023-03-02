@@ -22,7 +22,7 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-   public String placeOrder(OrderRequest orderRequest) throws JsonProcessingException {
+   public String placeOrder(@RequestBody OrderRequest orderRequest) throws JsonProcessingException {
 
         log.info("This request as been received :{}",objectMapper.writeValueAsString(orderRequest));
 
