@@ -58,7 +58,7 @@ public class OrderService {
        // Span inventoryServiceLookup = tracer.nextSpan().name("InventoryServiceLookup");
             // Call Inventory Service, and place order if product is in
             // stock
-            InventoryResponse[] inventoryResponsArray = webClientBuilder.build().
+            InventoryResponse[] inventoryResponseArray = webClientBuilder.build().
                     get()
                     .uri("http://localhost:8085/api/inventory",
                             uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
@@ -66,7 +66,7 @@ public class OrderService {
                     .bodyToMono(InventoryResponse[].class)
                     .block();
 
-        boolean allProductsInStock = Arrays.stream(inventoryResponsArray)
+        boolean allProductsInStock = Arrays.stream(inventoryResponseArray)
                     .allMatch(InventoryResponse::isInStock);
 
             if (allProductsInStock) {
