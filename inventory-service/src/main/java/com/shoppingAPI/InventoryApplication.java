@@ -32,4 +32,6 @@ public class InventoryApplication {
             inventoryRepository.save(inventory1);
         };
     }
+
+
 }

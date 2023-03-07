@@ -43,7 +43,12 @@ spring:
                       args:
                         name: FallBackController
                         fallbackuri: forward:/productServiceFallBack
-                        timeout: 10000
+
+                - id: INVENTORY-SERVICE
+                  uri: lb://INVENTORY-SERVICE
+                  predicates:
+                    - Path=/api/inventory/**
+
                 - id: EUREKA-SERVER
                   uri: http://localhost:8761
                   predicates:

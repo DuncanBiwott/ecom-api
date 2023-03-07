@@ -16,8 +16,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class OrderService {
     private  final  ObjectMapper objectMapper;
     //private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
-    public String placeOrder(OrderRequest orderRequest) throws JsonProcessingException {
+    public String placeOrder(OrderRequest orderRequest) {
         Order order=new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
 
@@ -39,9 +39,6 @@ public class OrderService {
 
 
         log.info("Calling the getOrderliesItems Method");
-
-        log.info("OrderLineItems List :{}", objectMapper.writeValueAsString(orderRequest.getOrderLineItemsDtoList()));
-
 
 
         List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
@@ -60,7 +57,7 @@ public class OrderService {
             // stock
             InventoryResponse[] inventoryResponseArray = webClientBuilder.build().
                     get()
-                    .uri("http://INVENTORY-SERVICE/api/inventory",
+                    .uri("http://localhost:8085/api/inventory",
                             uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
                     .retrieve()
                     .bodyToMono(InventoryResponse[].class)
