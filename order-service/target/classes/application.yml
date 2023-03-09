@@ -1,0 +1,58 @@
+eureka:
+    client:
+        fetch-registry: true
+
+        register-with-eureka: true
+        serviceUrl:
+            defaultZone: http://localhost:8761/eureka
+            hostname: localhost
+management:
+    endpoint:
+        health:
+            show-details: always
+    endpoints:
+        web:
+            exposure:
+                include: '*'
+    health:
+        circuitbreakers:
+            enabled: true
+resilience4j:
+    circuitbreaker:
+        instances:
+            inventory:
+                automaticTransitionFromOpenToHalfOpenEnabled: true
+                event-consumer-buffer-size: 10
+                failureRateThreshold: 50
+                permittedNumberOfCallsInHalfOpenState: 3
+                registerHealthIndicator: true
+                slidingWindowSize: 5
+                slidingWindowType: COUNT_BASED
+                waitDurationInOpenState: 5s
+    retry:
+        instances:
+            inventory:
+                max-attempts: 3
+                wait-duration: 5s
+    timelimiter:
+        instances:
+            inventory:
+                timeout-duration: 3s
+server:
+    port: 8086
+spring:
+    application:
+        name: ORDER-SERVICE
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        password: password
+        url: jdbc:mysql://localhost:3306/orderDB
+        username: root
+    jpa:
+        hibernate:
+            ddl-auto: update
+    sleuth:
+        sampler:
+            probability: 1.0
+    zipkin:
+        base-url: http://localhost:9411
