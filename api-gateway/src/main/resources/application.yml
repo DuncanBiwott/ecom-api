@@ -39,6 +39,7 @@ spring:
                   uri: lb://INVENTORY-SERVICE
                   predicates:
                       - Path=/api/inventory/**
+                      - Method=GET,POST
 
                 - id: EUREKA-SERVER
                   uri: http://localhost:8761
@@ -46,6 +47,7 @@ spring:
                       - Path=/eureka/web
                   filters:
                       - SetPath=/
+
 
                 - id: EUREKA-SERVER-STATIC
                   uri: http://localhost:8761

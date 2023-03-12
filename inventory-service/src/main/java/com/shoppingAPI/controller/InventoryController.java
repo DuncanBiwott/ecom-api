@@ -20,7 +20,7 @@ public class InventoryController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<InventoryResponse> isInStock(@RequestParam List<String> skuCode) {
-        log.info("Request is received");
+
         return inventoryService.isInStock(skuCode);
     }
 }

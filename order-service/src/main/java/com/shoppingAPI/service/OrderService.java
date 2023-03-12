@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shoppingAPI.dto.InventoryResponse;
 import com.shoppingAPI.dto.OrderLineItemsDto;
 import com.shoppingAPI.dto.OrderRequest;
+import com.shoppingAPI.event.OrderPlacedEvent;
 import com.shoppingAPI.model.Order;
 import com.shoppingAPI.model.OrderLineItems;
 import com.shoppingAPI.repository.OrderRepository;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -30,7 +32,7 @@ public class OrderService {
     private final WebClient.Builder webClientBuilder;
     private final Tracer tracer;
     private  final  ObjectMapper objectMapper;
-    //private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
     public String placeOrder(OrderRequest orderRequest) {
         Order order=new Order();
@@ -72,7 +74,10 @@ public class OrderService {
 
             if (allProductsInStock) {
                 orderRepository.save(order);
-                // kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber()));
+                log.info("Calling Notification Service");
+
+                kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber()));
+                log.info("Message has been send successfully");
                 return "Order Placed Successfully";
             } else {
                 throw new IllegalArgumentException("Product is not in stock, please try again later");
@@ -82,9 +87,6 @@ public class OrderService {
             inventorySpan.end();
         }
 
-       // Span inventoryServiceLookup = tracer.nextSpan().name("InventoryServiceLookup");
-            // Call Inventory Service, and place order if product is in
-            // stock
 
 
     }
