@@ -1,12 +1,14 @@
 package com.shoppingAPI.controller;
 
 import com.shoppingAPI.dto.OrderRequest;
+import com.shoppingAPI.model.Order;
 import com.shoppingAPI.service.OrderService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +40,11 @@ public class OrderController {
 
     public CompletableFuture<String> fallBackMethod(OrderRequest orderRequest, RuntimeException runtimeException) {
         return CompletableFuture.supplyAsync(() -> "Oops! Something went wrong, please order after some time!");
+    }
+
+    @GetMapping("/{page}/{pageNumber}")
+    public Page<Order> getInOrder(@PathVariable("page")Integer page,@PathVariable("pageNumber") Integer pageNumber){
+        return orderService.getOrder(page,pageNumber);
     }
 
 }

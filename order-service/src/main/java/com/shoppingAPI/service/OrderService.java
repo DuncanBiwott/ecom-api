@@ -12,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -63,7 +67,7 @@ public class OrderService {
 
             InventoryResponse[] inventoryResponseArray = webClientBuilder.build().
                     get()
-                    .uri("http://localhost:8085/api/inventory",
+                    .uri("http://inventory-service/api/inventory",
                             uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
                     .retrieve()
                     .bodyToMono(InventoryResponse[].class)
@@ -97,5 +101,10 @@ public class OrderService {
         orderLineItems.setQuantity(orderLineItemsDto.getQuantity());
         orderLineItems.setSkuCode(orderLineItemsDto.getSkuCode());
         return orderLineItems;
+    }
+
+    public Page<Order> getOrder(Integer page, Integer pageNumber) {
+        Pageable pageable= PageRequest.of(page,pageNumber, Sort.by(Sort.Direction.DESC,"orderNumber"));
+        return orderRepository.findAll(pageable);
     }
 }
